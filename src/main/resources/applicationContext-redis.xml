@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:c="http://www.springframework.org/schema/c" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<!-- 开启缓存注解 -->
+	<cache:annotation-driven cache-manager="cacheManager" />
+
+	<!-- jedis 配置 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
+	</bean>
+	<!-- jedis客户端连接工厂 -->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="poolConfig" ref="poolConfig" />
+		<property name="port" value="${redis.port}" />
+		<property name="hostName" value="${redis.host}" />
+		<property name="password" value="${redis.password}" />
+		<property name="timeout" value="${redis.timeout}"></property>
+	</bean>
+
+	<!-- redisTemplate模板 -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactory" />
+
+	<!-- spring自己的管理器，这里定义了三个缓存位置名称 ，既注解中的value -->
+	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean class="com.guoao.joven.cache.RedisCache">  <!-- 短期缓存 1个小时 -->
+					<property name="redisTemplate" ref="redisTemplate" />
+					<property name="name" value="shortTimeCache" />
+					<property name="liveTime" value="3600" />
+				</bean>
+				<bean class="com.guoao.joven.cache.RedisCache"> <!-- 长期缓存 4个小时 -->
+					<property name="redisTemplate" ref="redisTemplate" />
+					<property name="name" value="longTimeCache" />
+					<property name="liveTime" value="14400" />
+				</bean>
+				<bean class="com.guoao.joven.cache.RedisCache"> <!-- 永久缓存 -->
+					<property name="redisTemplate" ref="redisTemplate" />
+					<property name="name" value="nerverTimeCache" />
+					<property name="liveTime" value="0" />
+				</bean>
+			</set>
+		</property>
+	</bean>
+</beans>
