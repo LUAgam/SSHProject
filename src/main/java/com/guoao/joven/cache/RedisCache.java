@@ -7,7 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.dao.DataAccessException;
@@ -29,7 +30,7 @@ public class RedisCache implements Cache {
     /**
      * LOG日志
      */
-    private static final Logger LOGGER = Logger.getLogger(RedisCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisCache.class);
     
     private RedisTemplate<String, Object> redisTemplate;
     

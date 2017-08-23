@@ -17,9 +17,10 @@ package ao;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -42,7 +43,7 @@ import com.aomen.guo.service.impl.UserServiceImpl;
 @ContextConfiguration(locations = { "classpath:spring.xml", "classpath:hibernate.xml" })
 public class TestUser {
 
-	private static final Logger LOGGER = Logger.getLogger(TestUser.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestUser.class);
 	
 	@Autowired
 	private UserServiceImpl userService;

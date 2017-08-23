@@ -19,12 +19,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,7 @@ public class FiledChangeAspect {
 	@Autowired
 	GeneralDaoImpl generalDao;
 
-	private static final Logger logger = Logger.getLogger(FiledChangeAspect.class);
+	private static final Logger logger = LoggerFactory.getLogger(FiledChangeAspect.class);
 
 	@Pointcut("execution(public * com.aomen.guo.service.impl..saveOrUpdate(..))")
 	public void performance() {
