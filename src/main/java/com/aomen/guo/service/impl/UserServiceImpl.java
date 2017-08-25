@@ -39,6 +39,7 @@ import com.aomen.guo.entity.User;
  * 
  */
 @Service("userService")
+@Transactional(readOnly = true)
 public class UserServiceImpl {
 
 	@Autowired
@@ -77,7 +78,7 @@ public class UserServiceImpl {
 	 * @see com.aomen.guo.service.UserService#get(java.lang.String)
 	 * 
 	 */
-	@Cacheable(value = "shortTimeCache", key = "'get'+#id")
+	/*@Cacheable(value = "shortTimeCache", key = "'get'+#id")*/
 	public User get(Long id) {
 		return userDao.get(id);
 	}
@@ -117,6 +118,7 @@ public class UserServiceImpl {
 	 * @Transactional(readOnly = false,isolation =
 	 * Isolation.SERIALIZABLE,propagation = Propagation.REQUIRED)
 	 */
+	@Transactional(readOnly = false)
 	public Long save(User entity) {
 		return userDao.save(entity);
 	}
@@ -133,6 +135,7 @@ public class UserServiceImpl {
 	 * @see com.aomen.guo.service.UserService#saveOrUpdate(com.aomen.guo.entity.User)
 	 * 
 	 */
+	@Transactional(readOnly = false)
 	public void saveOrUpdate(User entity) {
 		userDao.saveOrUpdate(entity);
 	}

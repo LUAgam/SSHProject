@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<service name="HelloWorld">
+	<description>web service</description>
+	<parameter name="ServiceObjectSupplier">
+		org.apache.axis2.extensions.spring.receivers.SpringServletContextObjectSupplier
+	</parameter>
+	<parameter name="SpringBeanName">baseService</parameter>
+
+	<operation name="sayHello">
+		<messageReceiver class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+	</operation>
+
+	<operation name="getUser">
+		<messageReceiver class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+	</operation>
+
+</service> 
