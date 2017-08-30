@@ -3,7 +3,7 @@
   <display-name>springmvc_demo</display-name>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:spring.xml,classpath:hibernate.xml</param-value>
+    <param-value>classpath:spring.xml</param-value>
   </context-param>
   <filter>
     <filter-name>encodingFilter</filter-name>

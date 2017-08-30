@@ -14,19 +14,20 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<logback.version>1.0.13</logback.version>
 		<slf4j.version>1.7.6</slf4j.version>
-		<axis-version>1.7.6</axis-version>  
+		<axis-version>1.7.6</axis-version>
+		<sharding.jdbc.version>1.5.2</sharding.jdbc.version>
 	</properties>
 
 
 	<dependencies>
-	   <!-- junit -->
+		<!-- junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		 <!-- Spring -->
+		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -94,7 +95,11 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
@@ -163,7 +168,7 @@
 			<artifactId>druid</artifactId>
 			<version>1.1.2</version>
 		</dependency>
-        <!-- jackson -->
+		<!-- jackson -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -280,6 +285,19 @@
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-xjc</artifactId>
 			<version>2.2.7-b41</version>
+		</dependency>
+		<!-- netty -->
+		<!-- <dependency> <groupId>io.netty</groupId> <artifactId>netty-all</artifactId> <version>4.1.0.Final</version> </dependency> -->
+		<!-- 引入sharding-jdbc核心模块 -->
+		<dependency>
+			<groupId>com.dangdang</groupId>
+			<artifactId>sharding-jdbc-core</artifactId>
+			<version>${sharding.jdbc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dangdang</groupId>
+			<artifactId>sharding-jdbc-config-spring</artifactId>
+			<version>${sharding.jdbc.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
