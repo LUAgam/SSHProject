@@ -14,12 +14,12 @@ import com.google.common.collect.Range;
 */
 public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Long> {
 	
-	private int tbCount = 2;
+	private int tbCount = 4;
     
     @Override
     public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
+            if (each.endsWith(shardingValue.getValue() % tbCount + "")) {
                 return each;
             }
         }
@@ -32,7 +32,7 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
         Collection<Long> values = shardingValue.getValues();
         for (Long value : values) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(value % 2 + "")) {
+                if (each.endsWith(value % tbCount + "")) {
                     result.add(each);
                 }
             }
@@ -46,7 +46,7 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
         Range<Long> range = shardingValue.getValueRange();
         for (Long value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(value % 2 + "")) {
+                if (each.endsWith(value % tbCount + "")) {
                     result.add(each);
                 }
             }

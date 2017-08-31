@@ -1,74 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" xmlns:aop="http://www.springframework.org/schema/aop"
+<beans xmlns="http://www.springframework.org/schema/beans" 
+xmlns:cache="http://www.springframework.org/schema/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context-4.1.xsd
             http://www.springframework.org/schema/tx 
         http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+               http://www.springframework.org/schema/data/jpa
+       http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
             http://www.springframework.org/schema/aop 
             http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
-        http://www.dangdang.com/schema/ddframe/rdb 
-        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
+            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 	<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:config.properties" />
 	<!-- 集成Redis缓存框架 -->
 	<import resource="applicationContext-redis.xml" />
+	<!-- sharding-jdbc配置 -->
+	<import resource="sharding-jdbc.xml" />
 
 	<!-- 开启缓存注解 -->
 	<cache:annotation-driven cache-manager="cacheManager" />
 
-	<context:property-placeholder location="classpath:config.properties" />
 	<!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
 	<context:component-scan base-package="com.aomen.guo">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
 
-	<!-- 配置数据源1 -->
-	<bean id="dataSource_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-		<property name="driverClassName" value="${jdbc.driver}" />
-		<property name="url" value="${jdbc.url}" />
-		<property name="username" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-
-		<!-- 配置初始化大小、最小、最大 -->
-		<property name="initialSize" value="1" />
-		<property name="minIdle" value="1" />
-		<property name="maxActive" value="${jdbc.pool.maxActive}" />
-		<!-- 配置获取连接等待超时的时间 -->
-		<property name="maxWait" value="60000" />
-		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-		<property name="timeBetweenEvictionRunsMillis" value="60000" />
-		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-		<property name="minEvictableIdleTimeMillis" value="300000" />
-		<property name="validationQuery" value="SELECT 1" />
-		<property name="testWhileIdle" value="true" />
-		<property name="testOnBorrow" value="false" />
-		<property name="testOnReturn" value="false" />
-		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
-		<property name="poolPreparedStatements" value="false" />
-		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
-		<!-- 开启监控 -->
-		<property name="filters" value="stat,wall" />
-	</bean>
-
-	<bean id="dataSource_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-		<property name="driverClassName" value="${jdbc.driver2}" />
-		<property name="url" value="${jdbc.url2}" />
-		<property name="username" value="${jdbc.username2}" />
-		<property name="password" value="${jdbc.password2}" />
-	</bean>
-
 
 	<!-- 配置hibernate的SessionFactory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<!-- 注入数据源 相关信息看源码 -->
 		<property name="dataSource" ref="shardingDataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="POSTGRESQL" />
+		</property>
 		<!-- hibernate配置信息 -->
-		<property name="hibernateProperties">
+		<property name="jpaProperties">
 			<props>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
@@ -85,10 +58,14 @@
 		<property name="packagesToScan" value="com.aomen.guo.entity" />
 	</bean>
 
+
 	<!-- 配置事务管理器 -->
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
+
+	<!-- Spring Data Jpa配置 -->
+	<!-- <jpa:repositories base-package="com.aomen.guo.dao" repository-impl-postfix="Impl" transaction-manager-ref="transactionManager" factory-class="com.joven.jvcore.repository.base.BaseRepositoryFactoryBean" entity-manager-factory-ref="entityManagerFactory" /> -->
 
 	<!-- 使用annotation定义事务 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -141,34 +118,4 @@
 	<aop:config proxy-target-class="true">
 		<aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
 	</aop:config>
-
-	<!-- sharding-jdbc配置  可参考http://dangdangdotcom.github.io/sharding-jdbc/02-guide/configuration/ -->
-	<!-- 分库策略 -->
-	<rdb:strategy id="databaseStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloDatabaseShardingAlgorithm" />
-	<!-- 分表策略 -->
-	<rdb:strategy id="tableStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloTableShardingAlgorithm" />
-	<rdb:data-source id="shardingDataSource">
-	   <!-- 分库分表规则，并设置默认数据源。主键生成策略 -->
-		<rdb:sharding-rule data-sources="dataSource_0,dataSource_1" default-data-source="dataSource_0" key-generator-class="com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator">
-			<rdb:table-rules>
-			    <!-- 正式表，逻辑表，应用分库，分表策略 -->
-				<rdb:table-rule logic-table="tbl_user" actual-tables="tbl_user_0,tbl_user_1" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-				    <!-- 设置表中主键字段 -->
-					<rdb:generate-key-column column-name="id" />
-				</rdb:table-rule>
-				<rdb:table-rule logic-table="tbl_user_item" actual-tables="tbl_user_item_0,tbl_user_item_1" database-strategy="databaseStrategy" table-strategy="tableStrategy" />
-			</rdb:table-rules>
-			<!-- 绑定规则 -->
-			<rdb:binding-table-rules>
-				<rdb:binding-table-rule logic-tables="tbl_user, tbl_user_item" />
-			</rdb:binding-table-rules>
-			<!-- 默认分库，分表策略 -->
-			<rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm" />
-			<rdb:default-table-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm" />
-		</rdb:sharding-rule>
-		<rdb:props>
-			<prop key="metrics.enable">true</prop>
-			<prop key="sql.show">true</prop>
-		</rdb:props>
-	</rdb:data-source>
 </beans>

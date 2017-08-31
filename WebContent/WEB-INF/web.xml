@@ -22,8 +22,8 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter>
-    <filter-name>openSessionInViewFilter</filter-name>
-    <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+    <filter-name>openEntityManagerInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
     <init-param>
       <param-name>singleSession</param-name>
       <param-value>true</param-value>
@@ -59,7 +59,7 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
   <filter-mapping>
-    <filter-name>openSessionInViewFilter</filter-name>
+    <filter-name>openEntityManagerInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <session-config>

@@ -18,6 +18,9 @@ package com.aomen.guo.dao.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +41,8 @@ import com.aomen.guo.util.ReflectionUtils;
  */
 public class BaseDaoImpl<T, PK extends Serializable> implements BaseDao<T, PK> {
 
-	@Autowired
-	private SessionFactory sessionFactory;
+    @PersistenceContext
+	private EntityManager entityManager;
 
 	private Class<T> entityClass;
 
@@ -56,7 +59,7 @@ public class BaseDaoImpl<T, PK extends Serializable> implements BaseDao<T, PK> {
 	}
 
 	private Session getCurrentSession() {
-		return this.sessionFactory.getCurrentSession();
+		return this.entityManager.unwrap(org.hibernate.Session.class);
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class BaseDaoImpl<T, PK extends Serializable> implements BaseDao<T, PK> {
 
 	@Override
 	public List<T> findAll() {
-		return this.getCurrentSession().createQuery("from " + entityClass.getSimpleName()).setCacheable(true).list();
+		return this.getCurrentSession().createQuery("from " + entityClass.getSimpleName()).list();
 	}
 
 	@Override

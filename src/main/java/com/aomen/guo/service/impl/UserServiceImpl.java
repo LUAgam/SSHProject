@@ -47,9 +47,6 @@ public class UserServiceImpl {
     @Autowired
     private UserDaoImpl userDao;
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
     /**
      * ���� Javadoc��
      * 
@@ -98,8 +95,6 @@ public class UserServiceImpl {
      * 
      */
     public List<User> findAll() {
-        Transaction transaction = sessionFactory.getCurrentSession().getTransaction();
-        System.err.println(sessionFactory.getCurrentSession().getTransaction());
         return userDao.findAll();
     }
 

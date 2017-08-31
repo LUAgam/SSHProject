@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        ">
+	<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:config.properties" />
+	<!-- 配置主数据源0 -->
+	<bean id="dataSource_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="${jdbc.pool.maxActive}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="false" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		<!-- 开启监控 -->
+		<property name="filters" value="stat,wall" />
+	</bean>
+	<!-- 配置主数据源0的从数据源0 -->
+	<bean id="dataSource_0_slave_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver.slave.0}" />
+		<property name="url" value="${jdbc.url.slave.0}" />
+		<property name="username" value="${jdbc.username.slave.0}" />
+		<property name="password" value="${jdbc.password.slave.0}" />
+	</bean>
+	<!-- 配置主数据源0的从数据源1 -->
+	<bean id="dataSource_0_slave_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver.slave.1}" />
+		<property name="url" value="${jdbc.url.slave.1}" />
+		<property name="username" value="${jdbc.username.slave.1}" />
+		<property name="password" value="${jdbc.password.slave.1}" />
+	</bean>
+
+	<!-- 配置主数据源1 -->
+	<bean id="dataSource_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver2}" />
+		<property name="url" value="${jdbc.url2}" />
+		<property name="username" value="${jdbc.username2}" />
+		<property name="password" value="${jdbc.password2}" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="1" />
+		<property name="maxActive" value="${jdbc.pool.maxActive}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="false" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		<!-- 开启监控 -->
+		<property name="filters" value="stat,wall" />
+	</bean>
+	<!-- 配置主数据源1的从数据源0 -->
+	<bean id="dataSource_1_slave_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver2.slave.0}" />
+		<property name="url" value="${jdbc.url2.slave.0}" />
+		<property name="username" value="${jdbc.username2.slave.0}" />
+		<property name="password" value="${jdbc.password2.slave.0}" />
+	</bean>
+	<!-- 配置主数据源1的从数据源1 -->
+	<bean id="dataSource_1_slave_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver2.slave.1}" />
+		<property name="url" value="${jdbc.url2.slave.1}" />
+		<property name="username" value="${jdbc.username2.slave.1}" />
+		<property name="password" value="${jdbc.password2.slave.1}" />
+	</bean>
+
+    <!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 -->
+    <rdb:master-slave-data-source id="db_0" master-data-source-ref="dataSource_0" slave-data-sources-ref="dataSource_0_slave_0, dataSource_0_slave_1" />
+    <rdb:master-slave-data-source id="db_1" master-data-source-ref="dataSource_1" slave-data-sources-ref="dataSource_1_slave_0, dataSource_1_slave_1" />
+
+	<!-- sharding-jdbc配置 可参考http://dangdangdotcom.github.io/sharding-jdbc/02-guide/configuration/ -->
+	<!-- 分库策略 -->
+	<rdb:strategy id="databaseStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloDatabaseShardingAlgorithm" />
+	<!-- 分表策略 -->
+	<rdb:strategy id="tableStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloTableShardingAlgorithm" />
+	<rdb:data-source id="shardingDataSource">
+		<!-- 分库分表规则，并设置默认数据源。主键生成策略 -->
+		<rdb:sharding-rule data-sources="db_0,db_1" default-data-source="db_0" key-generator-class="com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator">
+			<rdb:table-rules>
+				<!-- 正式表，逻辑表，应用分库，分表策略 -->
+				<rdb:table-rule logic-table="tbl_user" actual-tables="tbl_user_0,tbl_user_1" database-strategy="databaseStrategy" table-strategy="tableStrategy">
+					<!-- 设置表中主键字段 -->
+					<rdb:generate-key-column column-name="id" />
+				</rdb:table-rule>
+			</rdb:table-rules>
+			<!-- 默认分库，分表策略 -->
+			<rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm" />
+			<rdb:default-table-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm" />
+		</rdb:sharding-rule>
+		<rdb:props>
+			<prop key="metrics.enable">true</prop>
+			<prop key="sql.show">true</prop>
+		</rdb:props>
+	</rdb:data-source>
+</beans>
