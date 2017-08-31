@@ -14,7 +14,7 @@ import com.google.common.collect.Range;
 */
 public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Long> {
 
-    private int dbCount = 1;
+    private int dbCount = 2;
 
     @Override
     public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {

@@ -12,12 +12,14 @@ import com.google.common.collect.Range;
 * @version 创建时间：2017年8月30日 下午4:12:34 
 * 类说明 
 */
-public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
+public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Long> {
+	
+	private int tbCount = 2;
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % 4 + "")) {
+            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
             }
         }
@@ -25,12 +27,12 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Collection<Integer> values = shardingValue.getValues();
-        for (Integer value : values) {
+        Collection<Long> values = shardingValue.getValues();
+        for (Long value : values) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(value % 4 + "")) {
+                if (each.endsWith(value % 2 + "")) {
                     result.add(each);
                 }
             }
@@ -39,12 +41,12 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Range<Integer> range = shardingValue.getValueRange();
-        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
+        Range<Long> range = shardingValue.getValueRange();
+        for (Long value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(value % 4 + "")) {
+                if (each.endsWith(value % 2 + "")) {
                     result.add(each);
                 }
             }

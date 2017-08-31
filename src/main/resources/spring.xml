@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-			http://www.springframework.org/schema/context
-			http://www.springframework.org/schema/context/spring-context-4.1.xsd
-			http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-4.1.xsd
+            http://www.springframework.org/schema/tx 
         http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
-			http://www.springframework.org/schema/aop 
-			http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+            http://www.springframework.org/schema/aop 
+            http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
         http://www.dangdang.com/schema/ddframe/rdb 
         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
 
-	<!-- <context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true" /> -->
 	<!-- 加载配置文件 -->
 	<!-- 集成Redis缓存框架 -->
 	<import resource="applicationContext-redis.xml" />
@@ -28,7 +27,7 @@
 	</context:component-scan>
 
 	<!-- 配置数据源1 -->
-	<bean id="dataSource_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="dataSource_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driver}" />
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
@@ -51,9 +50,11 @@
 		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
 		<property name="poolPreparedStatements" value="false" />
 		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		<!-- 开启监控 -->
+		<property name="filters" value="stat,wall" />
 	</bean>
 
-	<bean id="dataSource_2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="dataSource_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driver2}" />
 		<property name="url" value="${jdbc.url2}" />
 		<property name="username" value="${jdbc.username2}" />
@@ -126,19 +127,44 @@
 	<!-- 打开切面注解 -->
 	<aop:aspectj-autoproxy />
 
-	<!-- sharding-jdbc配置 -->
+	<!-- druid的spring监控 -->
+	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
+	</bean>
+	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+		<property name="patterns">
+			<list>
+				<value>com.aomen.guo.service.impl.*</value>
+			</list>
+		</property>
+	</bean>
+
+	<aop:config proxy-target-class="true">
+		<aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
+	</aop:config>
+
+	<!-- sharding-jdbc配置  可参考http://dangdangdotcom.github.io/sharding-jdbc/02-guide/configuration/ -->
+	<!-- 分库策略 -->
 	<rdb:strategy id="databaseStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloDatabaseShardingAlgorithm" />
+	<!-- 分表策略 -->
 	<rdb:strategy id="tableStrategy" sharding-columns="id" algorithm-class="com.aomen.guo.algorithm.SingleKeyModuloTableShardingAlgorithm" />
 	<rdb:data-source id="shardingDataSource">
-		<rdb:sharding-rule data-sources="dataSource_1,dataSource_2" default-data-source="dataSource_1">
+	   <!-- 分库分表规则，并设置默认数据源。主键生成策略 -->
+		<rdb:sharding-rule data-sources="dataSource_0,dataSource_1" default-data-source="dataSource_0" key-generator-class="com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator">
 			<rdb:table-rules>
-				<rdb:table-rule logic-table="tbl_user" actual-tables="tbl_user_0,tbl_user_1,tbl_user_2" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
-				<rdb:table-rule logic-table="tbl_user_item" actual-tables="tbl_user_item_0,tbl_user_item_1,tbl_user_item_2" database-strategy="databaseStrategy" table-strategy="tableStrategy" />
+			    <!-- 正式表，逻辑表，应用分库，分表策略 -->
+				<rdb:table-rule logic-table="tbl_user" actual-tables="tbl_user_0,tbl_user_1" database-strategy="databaseStrategy" table-strategy="tableStrategy">
+				    <!-- 设置表中主键字段 -->
+					<rdb:generate-key-column column-name="id" />
+				</rdb:table-rule>
+				<rdb:table-rule logic-table="tbl_user_item" actual-tables="tbl_user_item_0,tbl_user_item_1" database-strategy="databaseStrategy" table-strategy="tableStrategy" />
 			</rdb:table-rules>
+			<!-- 绑定规则 -->
 			<rdb:binding-table-rules>
 				<rdb:binding-table-rule logic-tables="tbl_user, tbl_user_item" />
 			</rdb:binding-table-rules>
-			<!-- <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm" /> -->
+			<!-- 默认分库，分表策略 -->
+			<rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm" />
+			<rdb:default-table-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm" />
 		</rdb:sharding-rule>
 		<rdb:props>
 			<prop key="metrics.enable">true</prop>
