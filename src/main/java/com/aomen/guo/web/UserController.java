@@ -22,17 +22,23 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.aomen.guo.entity.User;
-import com.aomen.guo.service.impl.RedisService;
-import com.aomen.guo.service.impl.UserServiceImpl;
+import com.aomen.guo.service.RedisService;
+import com.aomen.guo.service.UserService;
 import com.aomen.guo.util.ErrorUtils;
 import com.aomen.guo.web.formbean.UserFB;
 
@@ -54,7 +60,7 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
 
     @Autowired
     RedisService redisService;
@@ -62,9 +68,21 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET)
     public String do_list(Model model) {
         logger.info("查询用户");
-        List<User> users = userService.findAll();
+        Pageable pageable = new PageRequest(0, 3, new Sort(Sort.Direction.ASC, "id"));
+        Page<User> users = userService.findPage(pageable);
+        Page<UserFB> userFBs = userService.toPageFb(users);
         model.addAttribute("users", users);
+        model.addAttribute("userFBs", userFBs);
         return "/user/list";
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/getTableData",method = RequestMethod.POST)
+    public List<UserFB> getTableData(@RequestParam("pageNumber") String pageNumber,@RequestParam("pageSize") String pageSize,@RequestParam("sortName") String sortName,@RequestParam("sortOrder") String sortOrder) {
+        Pageable pageable = new PageRequest(0, 3, new Sort(Sort.Direction.ASC, "id"));
+        Page<User> users = userService.findPage(pageable);
+        Page<UserFB> userFBs = userService.toPageFb(users);
+        return userFBs.getContent();
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.PUT)
@@ -75,7 +93,8 @@ public class UserController {
             return "redirect:/user";
         }
         User user = userService.toEntity(userFB);
-        userService.save(user);
+        User user2 = userService.save(user);
+        redisService.put(user2);
         return "redirect:/user";
     }
 }

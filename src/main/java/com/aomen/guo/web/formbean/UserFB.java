@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @author AMGuo E-mail:www.guoao@foxmail.com
  * @version 创建时间：2017年8月30日 下午4:56:07 类说明
  */
-public class UserFB extends BaseFormBean {
+public class UserFB extends BaseFormBean{
 
     /**
      * 

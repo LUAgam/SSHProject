@@ -13,9 +13,9 @@
 * @version 1.0
 
 */
-package com.aomen.guo.dao.impl;
+package com.aomen.guo.dao;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.aomen.guo.entity.User;
 
@@ -30,7 +30,6 @@ import com.aomen.guo.entity.User;
  * @date 2017��8��7��
  * 
  */
-@Repository(value = "userDao")
-public class UserDaoImpl extends BaseDaoImpl<User, Long> {
+public interface UserDao extends BaseRepository<User, Long>, JpaSpecificationExecutor<Long> {
 
 }

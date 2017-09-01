@@ -8,7 +8,7 @@
 
 * @author AMGuo
 
-* @date 2017Äê8ÔÂ7ÈÕ
+* @date 2017ï¿½ï¿½8ï¿½ï¿½7ï¿½ï¿½
 
 * @version 1.0
 
@@ -34,7 +34,7 @@ import org.hibernate.annotations.GenericGenerator;
  * 
  * @author AMGuo
  * 
- * @date 2017Äê8ÔÂ7ÈÕ
+ * @date 2017ï¿½ï¿½8ï¿½ï¿½7ï¿½ï¿½
  * 
  */
 @MappedSuperclass

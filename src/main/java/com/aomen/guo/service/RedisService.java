@@ -13,7 +13,7 @@
 * @version 1.0
 
 */
-package com.aomen.guo.service.impl;
+package com.aomen.guo.service;
 
 import java.util.List;
 

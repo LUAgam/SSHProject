@@ -13,19 +13,19 @@
 * @version 1.0
 
 */
-package com.aomen.guo.service.impl;
+package com.aomen.guo.service;
 
 import java.util.List;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aomen.guo.dao.impl.UserDaoImpl;
+import com.aomen.guo.dao.UserDao;
 import com.aomen.guo.entity.User;
 import com.aomen.guo.web.formbean.UserFB;
 
@@ -42,44 +42,18 @@ import com.aomen.guo.web.formbean.UserFB;
  */
 @Service("userService")
 @Transactional(readOnly = true)
-public class UserServiceImpl {
+public class UserService {
 
     @Autowired
-    private UserDaoImpl userDao;
+    private UserDao userDao;
 
     /**
-     * ���� Javadoc��
-     * 
-     * Title: load
-     * 
-     * Description:
      * 
      * @param id
      * @return
-     * 
-     * @see com.aomen.guo.service.UserService#load(java.lang.String)
-     * 
      */
-    public User load(Long id) {
-        return userDao.load(id);
-    }
-
-    /**
-     * ���� Javadoc��
-     * 
-     * Title: get
-     * 
-     * Description:
-     * 
-     * @param id
-     * @return
-     * 
-     * @see com.aomen.guo.service.UserService#get(java.lang.String)
-     * 
-     */
-    /* @Cacheable(value = "shortTimeCache", key = "'get'+#id") */
-    public User get(Long id) {
-        return userDao.get(id);
+    public User findOne(Long id) {
+        return userDao.findOne(id);
     }
 
     /**
@@ -96,6 +70,10 @@ public class UserServiceImpl {
      */
     public List<User> findAll() {
         return userDao.findAll();
+    }
+
+    public Page<User> findPage(Pageable pageable) {
+        return userDao.findAll(pageable);
     }
 
     /**
@@ -116,25 +94,8 @@ public class UserServiceImpl {
      * Isolation.SERIALIZABLE,propagation = Propagation.REQUIRED)
      */
     @Transactional(readOnly = false)
-    public Long save(User entity) {
+    public User save(User entity) {
         return userDao.save(entity);
-    }
-
-    /**
-     * ���� Javadoc��
-     * 
-     * Title: saveOrUpdate
-     * 
-     * Description:
-     * 
-     * @param entity
-     * 
-     * @see com.aomen.guo.service.UserService#saveOrUpdate(com.aomen.guo.entity.User)
-     * 
-     */
-    @Transactional(readOnly = false)
-    public void saveOrUpdate(User entity) {
-        userDao.saveOrUpdate(entity);
     }
 
     /**
@@ -155,24 +116,28 @@ public class UserServiceImpl {
     }
 
     /**
-     * ���� Javadoc��
+     * toEntity
      * 
-     * Title: flush
-     * 
-     * Description:
-     * 
-     * 
-     * @see com.aomen.guo.service.UserService#flush()
-     * 
+     * @param userFB
+     * @return
      */
-    public void flush() {
-        userDao.flush();
-    }
-
     public User toEntity(UserFB userFB) {
         User user = new User();
         BeanUtils.copyProperties(userFB, user);
         return user;
+    }
+
+    public Page<UserFB> toPageFb(Page<User> users) {
+        Page<UserFB> userFBs = users.map(new Converter<User, UserFB>() {
+
+            @Override
+            public UserFB convert(User source) {
+                UserFB userFB = new UserFB();
+                BeanUtils.copyProperties(source, userFB);
+                return userFB;
+            }
+        });
+        return userFBs;
     }
 
 }

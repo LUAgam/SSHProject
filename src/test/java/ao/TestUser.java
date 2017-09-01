@@ -26,7 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.aomen.guo.entity.User;
-import com.aomen.guo.service.impl.UserServiceImpl;
+import com.aomen.guo.service.UserService;
 
 /**
  * 
@@ -46,7 +46,7 @@ public class TestUser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestUser.class);
 	
 	@Autowired
-	private UserServiceImpl userService;
+	private UserService userService;
 	
 	@Test
 	public void demo_1(){
