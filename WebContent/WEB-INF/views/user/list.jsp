@@ -1,105 +1,132 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../taglib.jsp"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="${ctx}/static/css/bootstrap-table.min.css">
 <link rel="stylesheet" href="${ctx}/static/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="${ctx}/static/css/bootstrap-table.min.css">
 </head>
 <body>
 	<c:if test="${!empty message}">
 		<font style="color: red;">${message}</font>
 	</c:if>
-	<table>
-		<thead>
-			<tr>
-				<th>编号</th>
-				<th>名称</th>
-				<th>用户名</th>
-				<th>密码</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${users.content }" var="user">
-				<tr>
-					<td>${user.id}</td>
-					<td>${user.name}</td>
-					<td>${user.username}</td>
-					<td>${user.password}</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-	<table id="table"></table>
-	<form action="<c:url value='/user/save'></c:url>" method="post">
-		<input type="hidden" name="_method" value="PUT"> <input type="text" name="name" /> <input type="text" name="username" /> <input type="password" name="password" /> <input type="submit" value="提交" />
-	</form>
+	<div class="container">
+		<div class="row">
+			<div id="toolbar">
+				<select class="form-control">
+					<option value="">导出本页</option>
+					<option value="all">导出所有</option>
+					<option value="selected">导出选中</option>
+				</select>
+			</div>
+			<table id="table" data-show-export="true">
+				<thead>
+					<tr>
+						<th data-field="state" data-checkbox="true"></th>
+						<th data-field="id">编号</th>
+						<th data-field="name">名称</th>
+						<th data-field="username">用户名</th>
+						<th data-field="password">密码</th>
+					</tr>
+				</thead>
+			</table>
+			<form action="<c:url value='/user/save'></c:url>" method="post">
+				<input type="hidden" name="_method" value="PUT"> <input type="text" name="name" /> <input type="text" name="username" /> <input type="password" name="password" /> <input type="submit" value="提交" />
+			</form>
+		</div>
+	</div>
 
 
 	<script type="text/javascript" src="${ctx}/static/js/jquery-3.1.1.min.js"></script>
 	<script src="${ctx}/static/bootstrap/js/bootstrap.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="${ctx}/static/js/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/bootstrap-table-export.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/tableExport.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/FileSaver.min.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/jspdf.min.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/jspdf.plugin.autotable.js"></script>
+	<script type="text/javascript" src="${ctx}/static/js/html2canvas.min.js"></script>
 
 	<!-- Latest compiled and minified Locales -->
 	<script src="${ctx}/static/js/bootstrap-table-zh-CN.min.js"></script>
 	<script type="text/javascript">
 		$(function() {
-			//获取table数据
-			/* var data;
-			$.ajax({
-				type : 'POST',
-				url : '/ao/user/getTableData',
-				dataType : 'json',
-				success : function(msg) {
-					data = msg;
-					alert(JSON.stringify(data.content));
-					$('#table').bootstrapTable('refresh', JSON.stringify(data.content));
-				},
-				error : function() {
-
-				}
-			}); */
 			$('#table').bootstrapTable({
 				pagination : true,
+				/* 缓存 */
+				cache : false,
 				/* 是否启用搜索框 */
 				search : true,
 				/* 是否显示 刷新按钮 */
-				showRefresh:true,
+				showRefresh : true,
 				/* 是否显示 切换试图（table/card）按钮 */
-				showToggle:true,
+				showToggle : true,
 				/* 是否显示 数据条数选择框 */
-				showPaginationSwitch:true,
-				columns : [ {
-					field : 'id',
-					title : '编号'
-				}, {
-					field : 'name',
-					title : '名称'
-				}, {
-					field : 'username',
-					title : '用户名'
-				}, {
-					field : 'password',
-					title : '密码'
-				} ],
+				showPaginationSwitch : true,
+				/* 设置为 true 会有隔行变色效果 */
+				striped : true,
+				/* 是否显示 内容列下拉框 */
+				showColumns : true,
+				/* 是否显示 数据条数选择框 */
+				showPaginationSwitch : true,
+				//可供选择的每页的行数（*）    
+				pageList : [ 3, 10, 25, 50, 100 ],
+				/* 指定主键列 */
+				idField : 'id',
+				/* 设置为 true 可以显示详细页面模式。 */
+				detailView : true,
+				/* 是否显示列头 */
+				showHeader : true,
+				/* 是否显示列脚 */
+				showFooter : false,
+				/* 设置true 将在点击行时，自动选择rediobox 和 checkbox */
+				clickToSelect : true,
+				toolbar : '#toolbar',
+				/* 设置为 true启用 全匹配搜索，否则为模糊搜索 */
+				strictSearch : true,
+				/* 设置为 true 在点击分页按钮或搜索按钮时，将记住checkbox的选择项 */
+				maintainSelected : true,
+				/* 导出格式 */
+				exportTypes:['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf'],
+				/* 格式化详细页面模式的视图。 */
+				detailFormatter : function(index, row) {
+					var html = [];
+
+					$.each(row, function(key, value) {
+
+						html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+
+					})
+					return html.join('');
+				},
 				url : '/ao/user/getTableData',
 				dataType : 'json',
-				method : 'post',
+				method : 'get',
 				sidePagination : 'server',
-				pageNumber:1,
-				pageSize:2,
+				pageNumber : 1,
+				pageSize : 3,
+				sortName : 'id',
+				queryParamsType : "",
+				sortOrder : 'asc',
 				queryParams : function(params) {
 					return {
-                        pageNumber: 3,
-                        pageSize: 2,
-                        sortName:'id',
-                        sortOrder:'asc'
-                      };
-                },
+						pageNumber : params.pageNumber,
+						pageSize : params.pageSize,
+						sortName : params.sortName,
+						sortOrder : params.sortOrder,
+						searchText : ''
+					};
+				},
+			});
+
+			$('#toolbar').find('select').change(function() {
+				$table.bootstrapTable('destroy').bootstrapTable({
+					exportDataType : $(this).val()
+				});
 			});
 		});
 	</script>
