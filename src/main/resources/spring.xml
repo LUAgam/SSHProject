@@ -32,7 +32,7 @@
 	<!-- 配置hibernate的SessionFactory -->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<!-- 注入数据源 相关信息看源码 -->
-		<property name="dataSource" ref="shardingDataSource" />
+		<property name="dataSource" ref="db_0" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="POSTGRESQL" />
 		</property>

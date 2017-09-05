@@ -22,14 +22,14 @@
 					<option value="selected">导出选中</option>
 				</select>
 			</div>
-			<table id="table" data-show-export="true">
+			<table id="table" data-show-export="true" >
 				<thead>
 					<tr>
 						<th data-field="state" data-checkbox="true"></th>
-						<th data-field="id">编号</th>
-						<th data-field="name">名称</th>
-						<th data-field="username">用户名</th>
-						<th data-field="password">密码</th>
+						<th data-field="id" data-sortable="true">编号</th>
+						<th data-field="name" data-sortable="true">名称</th>
+						<th data-field="username" data-sortable="true">用户名</th>
+						<th data-field="password" data-sortable="true">密码</th>
 					</tr>
 				</thead>
 			</table>
