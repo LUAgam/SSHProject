@@ -1,6 +1,6 @@
 package io.aomen.guo.web.formbean;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author AMGuo E-mail:www.guoao@foxmail.com
@@ -13,18 +13,13 @@ public class UserFB extends BaseFormBean{
      */
     private static final long serialVersionUID = -1489759430412742934L;
 
-    @NotEmpty(message = "名称不为空")
-    private String name;
-
-    @NotEmpty(message = "用户名不为空")
+    @NotBlank(message = "用户名不为空")
     private String username;
 
-    @NotEmpty(message = "密码不为空")
+    @NotBlank(message = "密码不为空")
     private String password;
-
-    public String getName() {
-        return name;
-    }
+    
+    private String rememberMe;
 
     public String getUsername() {
         return username;
@@ -34,10 +29,6 @@ public class UserFB extends BaseFormBean{
         return password;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -45,5 +36,19 @@ public class UserFB extends BaseFormBean{
     public void setPassword(String password) {
         this.password = password;
     }
+
+	/**
+	 * @return the rememberMe
+	 */
+	public String getRememberMe() {
+		return rememberMe;
+	}
+
+	/**
+	 * @param rememberMe the rememberMe to set
+	 */
+	public void setRememberMe(String rememberMe) {
+		this.rememberMe = rememberMe;
+	}
 
 }

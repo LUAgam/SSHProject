@@ -140,4 +140,8 @@ public class UserService {
         return userFBs;
     }
 
+	public User findByUsername(String username) {
+		return userDao.findByUsername(username);
+	}
+
 }

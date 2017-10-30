@@ -23,7 +23,7 @@
 	<cache:annotation-driven cache-manager="cacheManager" />
 
 	<!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
-	<context:component-scan base-package="com.aomen.guo">
+	<context:component-scan base-package="io.aomen.guo">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
@@ -32,7 +32,7 @@
 	<!-- 配置hibernate的SessionFactory -->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<!-- 注入数据源 相关信息看源码 -->
-		<property name="dataSource" ref="db_0" />
+		<property name="dataSource" ref="shardingDataSource" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="POSTGRESQL" />
 		</property>
@@ -53,7 +53,7 @@
 				</prop>
 			</props>
 		</property>
-		<property name="packagesToScan" value="com.aomen.guo.entity" />
+		<property name="packagesToScan" value="io.aomen.guo.entity" />
 	</bean>
 
 
@@ -63,16 +63,16 @@
 	</bean>
 
 	<!-- Spring Data Jpa配置 -->
-	<!-- <jpa:repositories base-package="com.aomen.guo.dao" repository-impl-postfix="Impl" transaction-manager-ref="transactionManager" factory-class="com.joven.jvcore.repository.base.BaseRepositoryFactoryBean" entity-manager-factory-ref="entityManagerFactory" /> -->
+	<!-- <jpa:repositories base-package="io.aomen.guo.dao" repository-impl-postfix="Impl" transaction-manager-ref="transactionManager" factory-class="com.joven.jvcore.repository.base.BaseRepositoryFactoryBean" entity-manager-factory-ref="entityManagerFactory" /> -->
 
 	<!-- 使用annotation定义事务 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	<!-- <tx:advice id="txAdvice" transaction-manager="transactionManager"> <tx:attributes> <tx:method name="save*" propagation="REQUIRED" read-only="false" /> <tx:method name="find*" propagation="NEVER" read-only="true" /> <tx:method name="get*" propagation="NEVER" read-only="true" /> <tx:method name="load*" propagation="NEVER" read-only="true" /> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="point-cut" expression="execution(* com.aomen.guo.service.impl..* (..))"/> <aop:advisor advice-ref="txAdvice" pointcut-ref="point-cut" /> </aop:config> -->
+	<!-- <tx:advice id="txAdvice" transaction-manager="transactionManager"> <tx:attributes> <tx:method name="save*" propagation="REQUIRED" read-only="false" /> <tx:method name="find*" propagation="NEVER" read-only="true" /> <tx:method name="get*" propagation="NEVER" read-only="true" /> <tx:method name="load*" propagation="NEVER" read-only="true" /> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut id="point-cut" expression="execution(* io.aomen.guo.service.impl..* (..))"/> <aop:advisor advice-ref="txAdvice" pointcut-ref="point-cut" /> </aop:config> -->
 
 
 
 	<!-- webservice bean -->
-	<bean id="baseService" class="com.aomen.guo.webservice.BaseServiceImpl"></bean>
+	<bean id="baseService" class="io.aomen.guo.webservice.BaseServiceImpl"></bean>
 
 	<!-- <bean id="shiroEhcacheManager" class="org.hibernate.cache.ehcache.EhCacheRegionFactory"> <property name="cacheManagerConfigFile" value="classpath:ehcache/ehcache-shiro.xml"/> </bean> -->
 
@@ -80,17 +80,17 @@
 	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
 		<property name="caches">
 			<set>
-				<bean class="com.guoao.joven.cache.RedisCache">  <!-- 短期缓存 1个小时 -->
+				<bean class="io.aomen.guo.cache.RedisCache">  <!-- 短期缓存 1个小时 -->
 					<property name="redisTemplate" ref="redisTemplate" />
 					<property name="name" value="shortTimeCache" />
 					<property name="liveTime" value="3600" />
 				</bean>
-				<bean class="com.guoao.joven.cache.RedisCache"> <!-- 长期缓存 4个小时 -->
+				<bean class="io.aomen.guo.cache.RedisCache"> <!-- 长期缓存 4个小时 -->
 					<property name="redisTemplate" ref="redisTemplate" />
 					<property name="name" value="longTimeCache" />
 					<property name="liveTime" value="14400" />
 				</bean>
-				<bean class="com.guoao.joven.cache.RedisCache"> <!-- 永久缓存 -->
+				<bean class="io.aomen.guo.cache.RedisCache"> <!-- 永久缓存 -->
 					<property name="redisTemplate" ref="redisTemplate" />
 					<property name="name" value="nerverTimeCache" />
 					<property name="liveTime" value="0" />
@@ -102,7 +102,7 @@
 	<!-- 打开切面注解 -->
 	<aop:aspectj-autoproxy />
 
-	<jpa:repositories base-package="com.aomen.guo.dao" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager" />
+	<jpa:repositories base-package="io.aomen.guo.dao" entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager" />
 
 	<!-- druid的spring监控 -->
 	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
@@ -110,7 +110,7 @@
 	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
 		<property name="patterns">
 			<list>
-				<value>com.aomen.guo.service.impl.*</value>
+				<value>io.aomen.guo.service.impl.*</value>
 			</list>
 		</property>
 	</bean>
