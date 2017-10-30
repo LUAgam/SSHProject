@@ -8,6 +8,15 @@
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="${ctx}/static/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="${ctx}/static/css/bootstrap-table.min.css">
+<style>
+    .crudDialog{padding: 0 0 2px;}
+.dialog-buttons a{font-weight: bold;}
+.form-group{margin-bottom: 20px;}
+.form-group label{position: absolute; line-height: 2; font-size: 16px; font-weight: normal; transition: all .2s; pointer-events: none; color: #999;}
+.form-group .active{transform: translateY(-65%); font-size: 12px; color: #337ab7;}
+.form-group .form-control{font-size: 14px; box-shadow: none; padding-left: 0; padding-right: 0; border-radius: 0; border: none; border-bottom: 2px solid #eee; outline: none; transition: all .5s;}
+.form-group .form-control:focus{box-shadow: none; border-color: #337ab7;}
+    </style>
 </head>
 <body>
 	<c:if test="${!empty message}">
@@ -22,7 +31,7 @@
 					<option value="selected">导出选中</option>
 				</select>
 			</div>
-			<table id="table" data-show-export="true" >
+			<table id="table" data-show-export="true">
 				<thead>
 					<tr>
 						<th data-field="state" data-checkbox="true"></th>
@@ -39,6 +48,23 @@
 		</div>
 	</div>
 
+	<div id="createDialog" class="crudDialog">
+		<form>
+			<div class="form-group">
+				<label for="input1">标题</label> <input id="input1" type="text" class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="input2">名称</label> <input id="input2" type="text" class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="input3">根目录</label> <input id="input3" type="text" class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="input4">图标</label> <input id="input4" type="text" class="form-control">
+			</div>
+		</form>
+	</div>
+
 
 	<script type="text/javascript" src="${ctx}/static/js/jquery-3.1.1.min.js"></script>
 	<script src="${ctx}/static/bootstrap/js/bootstrap.min.js"></script>
@@ -51,8 +77,27 @@
 	<script type="text/javascript" src="${ctx}/static/js/jspdf.plugin.autotable.js"></script>
 	<script type="text/javascript" src="${ctx}/static/js/html2canvas.min.js"></script>
 
+	<script type="text/javascript">
+		//设置input特效
+		$(document).on('focus', 'input[type="text"]', function() {
+			$(this).parent().find('label').addClass('active');
+		}).on('blur', 'input[type="text"]', function() {
+			if ($(this).val() == '') {
+				$(this).parent().find('label').removeClass('active');
+			}
+		});
+		// 初始化input特效
+		function initMaterialInput() {
+			$('form input[type="text"]').each(function() {
+				if ($(this).val() != '') {
+					$(this).parent().find('label').addClass('active');
+				}
+			});
+		}
+	</script>
 	<!-- Latest compiled and minified Locales -->
 	<script src="${ctx}/static/js/bootstrap-table-zh-CN.min.js"></script>
+
 	<script type="text/javascript">
 		$(function() {
 			$('#table').bootstrapTable({
@@ -91,7 +136,7 @@
 				/* 设置为 true 在点击分页按钮或搜索按钮时，将记住checkbox的选择项 */
 				maintainSelected : true,
 				/* 导出格式 */
-				exportTypes:['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf'],
+				exportTypes : [ 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf' ],
 				/* 格式化详细页面模式的视图。 */
 				detailFormatter : function(index, row) {
 					var html = [];

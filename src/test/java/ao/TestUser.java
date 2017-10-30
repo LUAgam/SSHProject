@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.aomen.guo.entity.User;
-import com.aomen.guo.service.UserService;
+import io.aomen.guo.entity.User;
+import io.aomen.guo.service.UserService;
 
 /**
  * 
@@ -40,7 +40,7 @@ import com.aomen.guo.service.UserService;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring.xml", "classpath:hibernate.xml" })
+@ContextConfiguration(locations = { "classpath:spring.xml" })
 public class TestUser {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestUser.class);
@@ -51,6 +51,7 @@ public class TestUser {
 	@Test
 	public void demo_1(){
 		List<User> users = userService.findAll();
+		System.out.println(users.toString());
 	}
 	
 	

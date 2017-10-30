@@ -13,7 +13,7 @@
             http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 	<!-- 加载配置文件 -->
-	<context:property-placeholder location="classpath:config.properties" />
+	<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true"/>
 	<!-- 集成Redis缓存框架 -->
 	<import resource="applicationContext-redis.xml" />
 	<!-- sharding-jdbc配置 -->
