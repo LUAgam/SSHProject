@@ -15,7 +15,10 @@
 */
 package com.aomen.guo.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import com.aomen.guo.entity.User;
 
@@ -31,5 +34,8 @@ import com.aomen.guo.entity.User;
  * 
  */
 public interface UserDao extends BaseRepository<User, Long>, JpaSpecificationExecutor<Long> {
+
+	@Query(value = "select * from tbl_user_0 limit 3",nativeQuery = true)
+	List<User> findMyBody();
 
 }

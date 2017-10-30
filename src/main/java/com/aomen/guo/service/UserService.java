@@ -140,4 +140,8 @@ public class UserService {
         return userFBs;
     }
 
+	public List<User> findMyBody() {
+		return userDao.findMyBody();
+	}
+
 }
