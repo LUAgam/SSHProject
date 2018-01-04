@@ -7,11 +7,10 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
 
-/** 
-* @author AMGuo E-mail:www.guoao@foxmail.com 
-* @version 创建时间：2017年8月30日 下午4:26:21 
-* 类说明 
-*/
+/**
+ * @author AMGuo E-mail:www.guoao@foxmail.com
+ * @version 创建时间：2017年8月30日 下午4:26:21 类说明
+ */
 public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Long> {
 
     private int dbCount = 2;
@@ -56,6 +55,7 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
 
     /**
      * 设置database分库的个数
+     * 
      * @param dbCount
      */
     public void setDbCount(int dbCount) {
