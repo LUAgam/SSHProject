@@ -63,8 +63,8 @@ public class InstallCert {
         char[] passphrase;
         if ((args.length == 1) || (args.length == 2)) {
             String[] c = args[0].split(":");
-            host = c[0];
-            port = (c.length == 1) ? 443 : Integer.parseInt(c[1]);
+            host = args[0];
+            port = 443;
             String p = (args.length == 1) ? "changeit" : args[1];
             passphrase = p.toCharArray();
         } else {

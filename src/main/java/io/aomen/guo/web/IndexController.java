@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class IndexController extends BaseController {
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String do_get() {
-	    
-	    
+	public String do_get() throws Exception {
 		return "/account/index";
 	}
 }

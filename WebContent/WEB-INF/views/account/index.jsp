@@ -13,14 +13,51 @@
 <link href="${ctx}/static/resources/css/admin.css" rel="stylesheet" />
 <link rel="stylesheet" href="${ctx}/static/css/bootstrap-table.min.css">
 <style>
-    .crudDialog{padding: 0 0 2px;}
-.dialog-buttons a{font-weight: bold;}
-.form-group{margin-bottom: 20px;}
-.form-group label{position: absolute; line-height: 2; font-size: 16px; font-weight: normal; transition: all .2s; pointer-events: none; color: #999;}
-.form-group .active{transform: translateY(-65%); font-size: 12px; color: #337ab7;}
-.form-group .form-control{font-size: 14px; box-shadow: none; padding-left: 0; padding-right: 0; border-radius: 0; border: none; border-bottom: 2px solid #eee; outline: none; transition: all .5s;}
-.form-group .form-control:focus{box-shadow: none; border-color: #337ab7;}
-    </style>
+.crudDialog {
+	padding: 0 0 2px;
+}
+
+.dialog-buttons a {
+	font-weight: bold;
+}
+
+.form-group {
+	margin-bottom: 20px;
+}
+
+.form-group label {
+	position: absolute;
+	line-height: 2;
+	font-size: 16px;
+	font-weight: normal;
+	transition: all .2s;
+	pointer-events: none;
+	color: #999;
+}
+
+.form-group .active {
+	transform: translateY(-65%);
+	font-size: 12px;
+	color: #337ab7;
+}
+
+.form-group .form-control {
+	font-size: 14px;
+	box-shadow: none;
+	padding-left: 0;
+	padding-right: 0;
+	border-radius: 0;
+	border: none;
+	border-bottom: 2px solid #eee;
+	outline: none;
+	transition: all .5s;
+}
+
+.form-group .form-control:focus {
+	box-shadow: none;
+	border-color: #337ab7;
+}
+</style>
 <style>
 /** skins **/
 #zheng-upms-server #header {
@@ -249,6 +286,8 @@
 										<th data-field="password" data-sortable="true">密码</th>
 									</tr>
 								</thead>
+								<tbody id="data">
+								</tbody>
 							</table>
 						</div>
 					</div>
@@ -302,78 +341,100 @@
 
 	<script type="text/javascript">
 		$(function() {
-			$('#table').bootstrapTable({
-				pagination : true,
-				/* 缓存 */
-				cache : false,
-				/* 是否启用搜索框 */
-				search : true,
-				/* 是否显示 刷新按钮 */
-				showRefresh : true,
-				/* 是否显示 切换试图（table/card）按钮 */
-				showToggle : true,
-				/* 是否显示 数据条数选择框 */
-				showPaginationSwitch : true,
-				/* 设置为 true 会有隔行变色效果 */
-				striped : true,
-				/* 是否显示 内容列下拉框 */
-				showColumns : true,
-				/* 是否显示 数据条数选择框 */
-				showPaginationSwitch : true,
-				//可供选择的每页的行数（*）    
-				pageList : [ 3, 10, 25, 50, 100 ],
-				/* 指定主键列 */
-				idField : 'id',
-				/* 设置为 true 可以显示详细页面模式。 */
-				detailView : true,
-				/* 是否显示列头 */
-				showHeader : true,
-				/* 是否显示列脚 */
-				showFooter : false,
-				/* 设置true 将在点击行时，自动选择rediobox 和 checkbox */
-				clickToSelect : true,
-				toolbar : '#toolbar',
-				/* 设置为 true启用 全匹配搜索，否则为模糊搜索 */
-				strictSearch : true,
-				/* 设置为 true 在点击分页按钮或搜索按钮时，将记住checkbox的选择项 */
-				maintainSelected : true,
-				/* 导出格式 */
-				exportTypes : [ 'json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'powerpoint', 'pdf' ],
-				/* 格式化详细页面模式的视图。 */
-				detailFormatter : function(index, row) {
-					var html = [];
+			$('#table').bootstrapTable(
+					{
+						pagination : true,
+						/* 缓存 */
+						cache : false,
+						/* 是否启用搜索框 */
+						search : true,
+						/* 是否显示 刷新按钮 */
+						showRefresh : true,
+						/* 是否显示 切换试图（table/card）按钮 */
+						showToggle : true,
+						/* 是否显示 数据条数选择框 */
+						showPaginationSwitch : true,
+						/* 设置为 true 会有隔行变色效果 */
+						striped : true,
+						/* 是否显示 内容列下拉框 */
+						showColumns : true,
+						/* 是否显示 数据条数选择框 */
+						showPaginationSwitch : true,
+						//可供选择的每页的行数（*）    
+						pageList : [ 3, 10, 25, 50, 100 ],
+						/* 指定主键列 */
+						idField : 'id',
+						/* 设置为 true 可以显示详细页面模式。 */
+						detailView : true,
+						/* 是否显示列头 */
+						showHeader : true,
+						/* 是否显示列脚 */
+						showFooter : false,
+						/* 设置true 将在点击行时，自动选择rediobox 和 checkbox */
+						clickToSelect : true,
+						toolbar : '#toolbar',
+						/* 设置为 true启用 全匹配搜索，否则为模糊搜索 */
+						strictSearch : true,
+						/* 设置为 true 在点击分页按钮或搜索按钮时，将记住checkbox的选择项 */
+						maintainSelected : true,
+						/* 导出格式 */
+						exportTypes : [ 'json', 'xml', 'png', 'csv', 'txt',
+								'sql', 'doc', 'excel', 'powerpoint', 'pdf' ],
+						/* 格式化详细页面模式的视图。 */
+						detailFormatter : function(index, row) {
+							var html = [];
 
-					$.each(row, function(key, value) {
+							$.each(row, function(key, value) {
 
-						html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+								html.push('<p><b>' + key + ':</b> ' + value
+										+ '</p>');
 
-					})
-					return html.join('');
-				},
-				url : '/ao/user/getTableData',
-				dataType : 'json',
-				method : 'get',
-				sidePagination : 'server',
-				pageNumber : 1,
-				pageSize : 3,
-				sortName : 'id',
-				queryParamsType : "",
-				sortOrder : 'asc',
-				queryParams : function(params) {
-					return {
-						pageNumber : params.pageNumber,
-						pageSize : params.pageSize,
-						sortName : params.sortName,
-						sortOrder : params.sortOrder,
-						searchText : ''
-					};
-				},
-			});
+							})
+							return html.join('');
+						},
+						url : '/ao/user/getTableData',
+						dataType : 'json',
+						method : 'get',
+						sidePagination : 'server',
+						pageNumber : 1,
+						pageSize : 3,
+						sortName : 'id',
+						queryParamsType : "",
+						sortOrder : 'asc',
+						queryParams : function(params) {
+							return {
+								pageNumber : params.pageNumber,
+								pageSize : params.pageSize,
+								sortName : params.sortName,
+								sortOrder : params.sortOrder,
+								searchText : ''
+							};
+						},
+					});
 
 			$('#toolbar').find('select').change(function() {
 				$table.bootstrapTable('destroy').bootstrapTable({
 					exportDataType : $(this).val()
 				});
+			});
+
+			$.ajax({
+				type : "GET",
+				url : "/ao/train/getTrainData",
+				dataType : "json",
+				success : function(data) {
+					$.each(data, function(index, content) {
+						var result = content.result;
+						$.each(result, function(index, contentNew) {
+							$('#data').append(
+									"<tr data-index='0'><td> <a class='detail-icon' href='#'> <i class='glyphicon glyphicon-plus icon-plus'></i> </a> </td><td class='bs-checkbox'><input data-index='0' name='btSelectItem' type='checkbox' value='110681633249558530'></td><td>" + content.flag
+											+ "</td><td>" + content.map
+											+ "</td><td>" + contentNew
+											+ "</td></tr>");
+						})
+					});
+
+				}
 			});
 		});
 	</script>

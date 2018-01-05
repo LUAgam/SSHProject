@@ -84,11 +84,10 @@ public class UserController {
 			@RequestParam(value = "pageSize", required = false) int pageSize,
 			@RequestParam(value = "sortName", required = false) String sortName,
 			@RequestParam(value = "sortOrder", required = false) String sortOrder) {
-		Pageable pageable = new PageRequest(pageNumber, pageSize,
-				new Sort(
-						StringUtils.isEmpty(sortOrder) ? Sort.Direction.ASC
-								: sortOrder.equalsIgnoreCase(Sort.Direction.ASC.toString()) ? Sort.Direction.ASC : Sort.Direction.DESC,
-						StringUtils.isEmpty(sortName) ? "id" : sortName));
+		Pageable pageable = new PageRequest(pageNumber, pageSize, new Sort(StringUtils.isEmpty(sortOrder)
+				? Sort.Direction.ASC
+				: sortOrder.equalsIgnoreCase(Sort.Direction.ASC.toString()) ? Sort.Direction.ASC : Sort.Direction.DESC,
+				StringUtils.isEmpty(sortName) ? "id" : sortName));
 		Page<User> users = userService.findPage(pageable);
 		Page<UserFB> userFBs = userService.toPageFb(users);
 		MyPage myPage = new MyPage(userFBs.getTotalElements(), userFBs.getContent());
